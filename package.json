@@ -1,0 +1,15 @@
+{
+    "name": "babel-plugin-client-variable",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "globals": "^15.9.0"
+    }
+}
