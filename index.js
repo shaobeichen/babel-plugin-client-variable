@@ -20,7 +20,13 @@ module.exports = function ({ template }) {
 
         // 检查是否在非node_modules文件中，并且变量是客户端特有的全局变量
         if (!filepath.includes('node_modules') && isClientGlobals(name)) {
-          if (path.scope.block.body.body) {
+          if (
+            path &&
+            path.scope &&
+            path.scope.block &&
+            path.scope.block.body &&
+            path.scope.block.body.body
+          ) {
             path.scope.block.body.body.unshift(template(`if(!process.client) return`)())
           }
         }
