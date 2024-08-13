@@ -39,9 +39,8 @@ name1()
 
 ```js
 function name1() {
-+    if(!process.client) return
-    const aaa = document.querySelector('body')
-    console.warn(aaa);
+  const aaa = process.client ? document.querySelector('body') : {}
+  console.warn(aaa)
 }
 
 name1()

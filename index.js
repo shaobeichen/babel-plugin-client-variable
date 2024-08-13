@@ -10,27 +10,43 @@ function isClientGlobals(variable) {
   return variable in browserGlobals && !(variable in nodeGlobals)
 }
 
-module.exports = function ({ template }) {
+module.exports = function ({ types: t, template }) {
+  const buildWrapper = template(`
+    process.client ? (%%expression%%) : {}
+  `)
+
   return {
     visitor: {
-      // 访问所有Identifier节点
       Identifier(path) {
+        if (path.node.wasProcessed) return
+
         const name = path.node.name
         const filepath = path.hub.file.opts.filename
 
-        // 检查是否在非node_modules文件中，并且变量是客户端特有的全局变量
         if (!filepath.includes('node_modules') && isClientGlobals(name)) {
-          if (
-            path &&
-            path.scope &&
-            path.scope.block &&
-            path.scope.block.body &&
-            path.scope.block.body.body
-          ) {
-            path.scope.block.body.body.unshift(template(`if(!process.client) return`)())
+          const parent = path.parent
+
+          if (t.isCallExpression(parent) && parent.callee === path.node) {
+            // 函数调用，如 document.querySelector()
+            wrapWithProcessClient(path.parentPath)
+          } else if (t.isMemberExpression(parent) && parent.object === path.node) {
+            // 属性访问，如 window.location
+            if (!t.isAssignmentExpression(path.parentPath.parent)) {
+              wrapWithProcessClient(path.parentPath)
+            }
           }
+
+          path.node.wasProcessed = true
+          path.skip()
         }
       },
     },
+  }
+
+  function wrapWithProcessClient(path) {
+    const wrapped = buildWrapper({
+      expression: path.node,
+    })
+    path.replaceWith(wrapped.expression)
   }
 }
