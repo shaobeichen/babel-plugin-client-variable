@@ -1,6 +1,6 @@
 {
     "name": "babel-plugin-client-variable",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "Preventing client variables from reporting errors on the server is very useful in SSR. 防止客户端变量在服务端报错，在SSR里使用很有用。",
     "main": "index.js",
     "scripts": {},
